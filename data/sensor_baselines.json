@@ -1,0 +1,22 @@
+{
+    "T24_LPC_Outlet_Temp": {
+        "LCL": 640.0,
+        "UCL": 643.0
+    },
+    "P30_HPC_Outlet_Pressure": {
+        "LCL": 47.2,
+        "UCL": 47.85
+    },
+    "Nf_Fan_Speed": {
+        "LCL": 8980.0,
+        "UCL": 9070.0
+    },
+    "Nc_Core_Speed": {
+        "LCL": 2387.9,
+        "UCL": 2388.2
+    },
+    "BPR_Bypass_Ratio": {
+        "LCL": 8.38,
+        "UCL": 8.48
+    }
+}

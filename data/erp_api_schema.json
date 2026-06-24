@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "MaintenanceTicket",
+    "type": "object",
+    "properties": {
+        "engine_id": {
+            "type": "string",
+            "description": "Unique identifier of the failing engine"
+        },
+        "failing_sensors": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "description": "List of sensors exceeding baseline control limits"
+        },
+        "estimated_rul": {
+            "type": "integer",
+            "description": "Estimated remaining useful cycles before failure"
+        },
+        "priority_level": {
+            "type": "string",
+            "enum": [
+                "LOW",
+                "MEDIUM",
+                "HIGH",
+                "CRITICAL"
+            ],
+            "description": "Priority tier based on remaining useful life"
+        }
+    },
+    "required": [
+        "engine_id",
+        "failing_sensors",
+        "estimated_rul",
+        "priority_level"
+    ]
+}

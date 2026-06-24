@@ -1,0 +1,16 @@
+{
+    "MNT-3239655C": {
+        "engine_id": "TF-804",
+        "failing_sensors": [
+            "T24_LPC_Outlet_Temp",
+            "P30_HPC_Outlet_Pressure",
+            "Nc_Core_Speed",
+            "BPR_Bypass_Ratio"
+        ],
+        "estimated_rul": 2,
+        "priority_level": "CRITICAL",
+        "ticket_id": "MNT-3239655C",
+        "status": "OPEN",
+        "created_at": "2026-06-24T14:47:33.127752"
+    }
+}
