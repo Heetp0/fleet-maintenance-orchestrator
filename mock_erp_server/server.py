@@ -1,6 +1,7 @@
 import os
 import json
 import uuid
+import datetime
 from typing import List
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel, Field
@@ -45,12 +46,7 @@ def create_ticket(ticket: TicketCreate):
         
     db = load_db()
     
-    # Check if a ticket already exists for this engine
-    # Wait, the prompt state management should also prevent this at the agent level,
-    # but the API can return the existing ticket if requested, or just log a new one.
-    # Let's allow creating multiple tickets but keep track of them.
     ticket_id = f"MNT-{uuid.uuid4().hex[:8].upper()}"
-    import datetime
     created_at = datetime.datetime.now().isoformat()
     
     new_ticket = TicketResponse(

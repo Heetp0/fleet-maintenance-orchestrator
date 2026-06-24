@@ -8,6 +8,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from fleet_agents import app
 from google.adk.runners import InMemoryRunner
+from google.genai import types
 
 # Load environment variables
 load_dotenv()
@@ -21,11 +22,25 @@ async def run_cycle(cycle_number: int):
     # Query for the agent
     query = f"Please ingest and analyze the telemetry data for cycle {cycle_number}, validate the RUL prediction, and if it's below 30 cycles, submit a maintenance ticket."
     
+    # Build a proper Content message (required by ADK InMemoryRunner)
+    message = types.Content(
+        role="user",
+        parts=[types.Part(text=query)]
+    )
+    
     try:
-        # Run using run_debug
-        response = await runner.run_debug(query)
+        final_response = None
+        # run_async yields events; collect the final response
+        async for event in runner.run_async(
+            user_id="user_1",
+            session_id=f"session_cycle_{cycle_number}",
+            new_message=message
+        ):
+            if event.is_final_response():
+                final_response = event.content.parts[0].text if event.content and event.content.parts else ""
+                
         print("\n=== Final Response ===")
-        print(response)
+        print(final_response)
         print("=======================")
     except Exception as e:
         print(f"Error during agent execution: {e}")

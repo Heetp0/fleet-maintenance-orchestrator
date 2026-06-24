@@ -1,7 +1,7 @@
 from google.adk.agents import LlmAgent
 from .tools import read_telemetry, calculate_rul, check_baselines
 
-GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_MODEL = "gemini-flash-lite-latest"
 
 rul_agent = LlmAgent(
     name="RULAnalysisAgent",

@@ -2,7 +2,12 @@ import os
 import json
 import requests
 
-ACTIVE_TICKETS_FILE = 'data/active_tickets.json'
+# Resolve the active tickets file path relative to this file's location,
+# with a CWD fallback — consistent with the other tools in this package.
+_TOOLS_DIR = os.path.dirname(os.path.abspath(__file__))
+_PROJECT_ROOT = os.path.abspath(os.path.join(_TOOLS_DIR, '..', '..'))
+
+ACTIVE_TICKETS_FILE = os.path.join(_PROJECT_ROOT, 'data', 'active_tickets.json')
 
 def submit_ticket(
     engine_id: str,
@@ -23,7 +28,8 @@ def submit_ticket(
     Returns:
         dict: The response from the ERP system, including the ticket_id and status.
     """
-    os.makedirs('data', exist_ok=True)
+    data_dir = os.path.join(_PROJECT_ROOT, 'data')
+    os.makedirs(data_dir, exist_ok=True)
     
     # 1. Read existing tickets database to prevent duplicates
     active_tickets = {}
@@ -62,7 +68,7 @@ def submit_ticket(
             res_json = response.json()
             res_json["status"] = "success"
             
-            # Save ticket to active tickets DB
+            # Save ticket to active tickets DB (agent-side duplicate prevention cache)
             active_tickets[engine_id] = {
                 "ticket_id": res_json["ticket_id"],
                 "priority_level": priority_level,

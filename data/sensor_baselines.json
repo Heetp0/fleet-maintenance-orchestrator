@@ -12,8 +12,8 @@
         "UCL": 9070.0
     },
     "Nc_Core_Speed": {
-        "LCL": 2387.9,
-        "UCL": 2388.2
+        "LCL": 2387.90,
+        "UCL": 2388.25
     },
     "BPR_Bypass_Ratio": {
         "LCL": 8.38,

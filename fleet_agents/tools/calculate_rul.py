@@ -2,6 +2,30 @@ import os
 import pickle
 import pandas as pd
 
+# Module-level cache — model is loaded from disk only once per process lifetime.
+_model = None
+
+def _get_model():
+    """Load and cache the RUL model at module level to avoid repeated disk I/O."""
+    global _model
+    if _model is not None:
+        return _model, None  # (model, error)
+
+    model_path = 'models/rul_model.pkl'
+    if not os.path.exists(model_path):
+        model_path = os.path.join(os.path.dirname(__file__), '../../models/rul_model.pkl')
+
+    if not os.path.exists(model_path):
+        return None, f"ML model file not found at {model_path}"
+
+    try:
+        with open(model_path, 'rb') as f:
+            _model = pickle.load(f)
+        return _model, None
+    except Exception as e:
+        return None, str(e)
+
+
 def calculate_rul(
     setting_1: float,
     setting_2: float,
@@ -29,17 +53,11 @@ def calculate_rul(
     Returns:
         dict: A dictionary containing the estimated remaining useful cycles (RUL) and status.
     """
-    model_path = 'models/rul_model.pkl'
-    if not os.path.exists(model_path):
-        model_path = os.path.join(os.path.dirname(__file__), '../../models/rul_model.pkl')
-        
-    if not os.path.exists(model_path):
-        return {"status": "error", "error_message": f"ML model file not found at {model_path}"}
-        
+    model, error = _get_model()
+    if error:
+        return {"status": "error", "error_message": error}
+
     try:
-        with open(model_path, 'rb') as f:
-            model = pickle.load(f)
-            
         # Create a single-row DataFrame for prediction
         input_data = pd.DataFrame([[
             setting_1, setting_2, setting_3,

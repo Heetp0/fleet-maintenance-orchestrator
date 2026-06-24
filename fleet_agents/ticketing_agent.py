@@ -1,7 +1,7 @@
 from google.adk.agents import LlmAgent
 from .tools import submit_ticket
 
-GEMINI_MODEL = "gemini-2.5-flash"
+GEMINI_MODEL = "gemini-1.5-flash"
 
 ticketing_agent = LlmAgent(
     name="TicketingAgent",
@@ -15,8 +15,8 @@ ticketing_agent = LlmAgent(
     3. If validation passed:
        - Check the "estimated_rul". If RUL is less than 30 cycles:
          - Submit a maintenance ticket using the submit_ticket tool.
-         - Use the "estimated_rul", "failing_sensors", and "priority_level" from the guardrail result.
-         - The engine_id is "TF-804".
+         - Use the "engine_id", "estimated_rul", "failing_sensors", and "priority_level" from the guardrail result.
+           The "engine_id" field is present in the guardrail result — use it directly, do not hardcode any value.
        - If RUL is 30 cycles or more:
          - Do not submit a ticket. Report that the engine is operating within safe parameters and no maintenance is required.
          
