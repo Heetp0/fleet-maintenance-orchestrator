@@ -30,7 +30,7 @@ The orchestration loop consists of three primary agents:
 
 **1. Clone the repository and install dependencies:**
 ```bash
-git clone https://github.com/Heetp0/turbofan-rul-orchestrator.git
+git clone https://github.com/Heetp0/fleet-maintenance-orchestrator.git
 cd turbofan-rul-orchestrator
 pip install -r requirements.txt
 
