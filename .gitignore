@@ -21,6 +21,7 @@ models/*.pkl
 models/**/*.pkl
 *.pkl
 *.joblib
+!models/rul_model.pkl
 
 # Agent State, Databases, and Memory Logs (SQLite databases or JSON memory logs created during testing)
 *.db
