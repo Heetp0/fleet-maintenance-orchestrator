@@ -1,11 +1,11 @@
-fastapi
+fastapi>=0.115.0
 uvicorn>=0.32.0
 pandas>=2.2.3
 numpy>=1.26.4
-scikit-learn==1.5.2
+scikit-learn>=1.9.0
 google-adk>=2.3.0
-google-genai
-pydantic
+google-genai>=0.8.0
+pydantic>=2.10.0
 pytest>=8.3.3
 requests>=2.32.3
 jinja2>=3.1.4
