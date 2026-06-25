@@ -24,20 +24,27 @@ def run_analysis(cycle_number: int, engine_id: str) -> dict:
         try:
             response = await runner.run_debug(query)
             
-            # Extract state from session manually
-            rul_analysis_result = runner.session.state.get("rul_analysis_result", {})
-            guardrail_result = runner.session.state.get("guardrail_result", {})
-            
-            # In google.adk, the final response text from the ticketing agent can be accessed
+            import json
+            rul_analysis_result = {}
+            guardrail_result = {}
             ticketing_result = ""
-            for event in reversed(response):
+            
+            for event in response:
                 if hasattr(event, 'content') and event.content and event.content.parts:
                     for part in event.content.parts:
                         if hasattr(part, 'text') and part.text:
-                            ticketing_result = part.text
-                            break
-                if ticketing_result:
-                    break
+                            text = part.text.strip()
+                            if text.startswith("{") and text.endswith("}"):
+                                try:
+                                    data = json.loads(text)
+                                    if "priority_level" in data:
+                                        guardrail_result = data
+                                    elif "estimated_rul" in data:
+                                        rul_analysis_result = data
+                                except Exception:
+                                    pass
+                            else:
+                                ticketing_result = text
 
             return {
                 "status": "success",
