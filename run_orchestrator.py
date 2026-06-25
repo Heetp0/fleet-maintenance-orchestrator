@@ -12,7 +12,7 @@ from google.adk.runners import InMemoryRunner
 # Load environment variables
 load_dotenv()
 
-async def run_cycle(cycle_number: int):
+async def run_cycle(cycle_number: int, engine_id: str = "TF-804"):
     print(f"=== Starting Fleet Maintenance Orchestrator for Cycle {cycle_number} ===")
     
     # Initialize Runner with auto session creation enabled
@@ -20,7 +20,7 @@ async def run_cycle(cycle_number: int):
     runner.auto_create_session = True
     
     # Query for the agent
-    query = f"Please ingest and analyze the telemetry data for cycle {cycle_number}, validate the RUL prediction, and if it's below 30 cycles, submit a maintenance ticket."
+    query = f"Please ingest and analyze the telemetry data for engine {engine_id} at cycle {cycle_number}, validate the RUL prediction, and if it's below 30 cycles, submit a maintenance ticket."
     
     try:
         # run_debug handles session management internally and streams all agent steps
@@ -46,10 +46,12 @@ async def run_cycle(cycle_number: int):
 
 if __name__ == "__main__":
     cycle = 38
+    engine = "TF-804"
     if len(sys.argv) > 1:
         try:
             cycle = int(sys.argv[1])
         except ValueError:
             print(f"Invalid cycle number. Using default cycle {cycle}.")
-            
-    asyncio.run(run_cycle(cycle))
+    if len(sys.argv) > 2:
+        engine = sys.argv[2]
+    asyncio.run(run_cycle(cycle, engine))

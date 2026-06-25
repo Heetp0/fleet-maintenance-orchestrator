@@ -16,7 +16,7 @@ ticketing_agent = LlmAgent(
        - Check the "estimated_rul". If RUL is less than 30 cycles:
          - Submit a maintenance ticket using the submit_ticket tool.
          - Use the "engine_id", "estimated_rul", "failing_sensors", and "priority_level" from the guardrail result.
-           The "engine_id" field is present in the guardrail result — use it directly, do not hardcode any value.
+           Use the engine_id from the rul_analysis_result in session state.
        - If RUL is 30 cycles or more:
          - Do not submit a ticket. Report that the engine is operating within safe parameters and no maintenance is required.
          

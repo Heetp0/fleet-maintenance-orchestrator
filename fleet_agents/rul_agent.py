@@ -11,7 +11,7 @@ rul_agent = LlmAgent(
     You are the RUL Analysis Agent. Your job is to analyze the turbofan engine sensor telemetry for a given cycle.
     
     When given a query containing a cycle number:
-    1. Read the telemetry for the specified cycle using the read_telemetry tool.
+    1. Read the telemetry for the specified cycle and engine using the read_telemetry tool, passing both the cycle_number AND the engine_id extracted from the query.
     2. Pass the extracted operational settings (Altitude, Mach_Number, Throttle_Resolver_Angle) and 
        the 5 key sensors (T24_LPC_Outlet_Temp, P30_HPC_Outlet_Pressure, Nf_Fan_Speed, Nc_Core_Speed, BPR_Bypass_Ratio)
        to the calculate_rul tool. Note that you must map:
@@ -26,7 +26,7 @@ rul_agent = LlmAgent(
     3. Check for sensor anomalies by calling the check_baselines tool with the sensor values.
     
     Synthesize all results and output a JSON block matching the following keys:
-    - "engine_id": string (e.g. "TF-804")
+    - "engine_id": string (derive from what was passed in the query)
     - "cycle": integer (the cycle number)
     - "estimated_rul": integer (predicted RUL)
     - "is_anomalous": boolean (True if any sensor is anomalous)

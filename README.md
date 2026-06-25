@@ -191,6 +191,24 @@ python run_orchestrator.py 38
 
 ---
 
+## Running the Dashboard
+
+The Streamlit dashboard provides a visual fleet overview, real-time analysis results, and a natural language query interface.
+
+**Terminal 1 — Start the Mock ERP Server:**
+```bash
+python mock_erp_server/server.py
+```
+
+**Terminal 2 — Launch the Dashboard:**
+```bash
+streamlit run dashboard/app.py
+```
+
+Open `http://localhost:8501` in your browser. Select an engine and cycle from the sidebar and click **▶ Run Analysis**, or type a natural language query such as `Check engine TF-512 at cycle 50`.
+
+---
+
 ## Demo Output
 
 ### Nominal Engine — Cycle 10
