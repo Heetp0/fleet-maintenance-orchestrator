@@ -19,6 +19,7 @@ def run_analysis(cycle_number: int, engine_id: str) -> dict:
     """Run the agent pipeline synchronously and return structured results."""
     async def _run():
         runner = InMemoryRunner(app=fleet_app)
+        runner.auto_create_session = True
         query = f"Please ingest and analyze the telemetry data for engine {engine_id} at cycle {cycle_number}, validate the RUL prediction, and if it's below 30 cycles, submit a maintenance ticket."
         try:
             response = await runner.run_debug(query)
@@ -156,7 +157,7 @@ st.subheader("Open Maintenance Tickets")
 try:
     resp = requests.get("http://127.0.0.1:8080/api/v1/maintenance/tickets")
     if resp.status_code == 200:
-        tickets = resp.json().get("tickets", [])
+        tickets = resp.json()
         if not tickets:
             st.success("No open tickets")
         else:
