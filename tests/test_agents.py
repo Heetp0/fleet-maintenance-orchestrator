@@ -12,26 +12,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from fleet_agents import app
 from google.adk.runners import InMemoryRunner
-from google.genai import types
 from mock_erp_server.server import app as fastapi_app, DB_FILE
 
-
-async def _run_query(runner: InMemoryRunner, query: str, session_id: str) -> str:
-    """Helper: run a query through the ADK runner and return the final response text."""
-    message = types.Content(
-        role="user",
-        parts=[types.Part(text=query)]
-    )
-    final_response = ""
-    async for event in runner.run_async(
-        user_id="test_user",
-        session_id=session_id,
-        new_message=message
-    ):
-        if event.is_final_response():
-            if event.content and event.content.parts:
-                final_response = event.content.parts[0].text
-    return final_response
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_ACTIVE_TICKETS_FILE = os.path.join(_PROJECT_ROOT, 'data', 'active_tickets.json')
 
 
 class TestFleetAgentPipeline(unittest.TestCase):
@@ -47,13 +31,9 @@ class TestFleetAgentPipeline(unittest.TestCase):
             except Exception:
                 pass
                 
-        active_tickets_file = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            'data', 'active_tickets.json'
-        )
-        if os.path.exists(active_tickets_file):
+        if os.path.exists(_ACTIVE_TICKETS_FILE):
             try:
-                os.remove(active_tickets_file)
+                os.remove(_ACTIVE_TICKETS_FILE)
             except Exception:
                 pass
                 
@@ -75,13 +55,9 @@ class TestFleetAgentPipeline(unittest.TestCase):
                 os.remove(DB_FILE)
             except Exception:
                 pass
-        active_tickets_file = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-            'data', 'active_tickets.json'
-        )
-        if os.path.exists(active_tickets_file):
+        if os.path.exists(_ACTIVE_TICKETS_FILE):
             try:
-                os.remove(active_tickets_file)
+                os.remove(_ACTIVE_TICKETS_FILE)
             except Exception:
                 pass
 
@@ -93,6 +69,7 @@ class TestFleetAgentPipeline(unittest.TestCase):
             
     def test_end_to_end_orchestrator(self):
         # 1. Initialize the ADK InMemoryRunner
+        # run_debug() manages its own internal session, so no session pre-creation needed.
         runner = InMemoryRunner(app=app)
         
         # 2. Test healthy cycle (Cycle 10)
@@ -100,9 +77,8 @@ class TestFleetAgentPipeline(unittest.TestCase):
         print("\n--- Testing healthy cycle 10 ---")
         query_healthy = "Please ingest and analyze the telemetry data for cycle 10, validate the RUL prediction, and if it's below 30 cycles, submit a maintenance ticket."
         
-        response_healthy = asyncio.run(_run_query(runner, query_healthy, "session_healthy_10"))
-        print("Healthy cycle response:")
-        print(response_healthy)
+        events_healthy = asyncio.run(runner.run_debug(query_healthy))
+        print(f"Healthy cycle: {len(events_healthy)} events collected")
         
         # Verify no ticket was written to FastAPI db
         if os.path.exists(DB_FILE):
@@ -114,9 +90,8 @@ class TestFleetAgentPipeline(unittest.TestCase):
         # RUL should be low (< 30 cycles) and sensors anomalous, which should trigger a ticket.
         print("\n--- Testing degraded cycle 48 ---")
         query_degraded = "Please ingest and analyze the telemetry data for cycle 48, validate the RUL prediction, and if it's below 30 cycles, submit a maintenance ticket."
-        response_degraded = asyncio.run(_run_query(runner, query_degraded, "session_degraded_48"))
-        print("Degraded cycle response:")
-        print(response_degraded)
+        events_degraded = asyncio.run(runner.run_debug(query_degraded))
+        print(f"Degraded cycle: {len(events_degraded)} events collected")
         
         # Verify ticket was submitted to mock ERP
         self.assertTrue(os.path.exists(DB_FILE), "Ticket DB file should be created.")
@@ -130,9 +105,8 @@ class TestFleetAgentPipeline(unittest.TestCase):
         # 4. Test duplicate prevention (Run Cycle 48 again)
         # It should detect the active ticket and skip submission.
         print("\n--- Testing duplicate ticket prevention (Cycle 48 again) ---")
-        response_duplicate = asyncio.run(_run_query(runner, query_degraded, "session_degraded_48_retry"))
-        print("Duplicate run response:")
-        print(response_duplicate)
+        events_duplicate = asyncio.run(runner.run_debug(query_degraded))
+        print(f"Duplicate run: {len(events_duplicate)} events collected")
         
         # Verify we still only have 1 ticket in the ERP database (no new ticket was created)
         with open(DB_FILE, 'r') as f:

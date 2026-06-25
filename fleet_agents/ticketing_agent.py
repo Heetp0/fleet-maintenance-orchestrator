@@ -1,7 +1,7 @@
 from google.adk.agents import LlmAgent
 from .tools import submit_ticket
 
-GEMINI_MODEL = "gemini-1.5-flash"
+GEMINI_MODEL = "gemini-flash-lite-latest"
 
 ticketing_agent = LlmAgent(
     name="TicketingAgent",

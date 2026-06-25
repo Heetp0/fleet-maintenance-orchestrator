@@ -1,6 +1,6 @@
 from google.adk.agents import LlmAgent
 
-GEMINI_MODEL = "gemini-1.5-flash"
+GEMINI_MODEL = "gemini-flash-lite-latest"
 
 guardrail_agent = LlmAgent(
     name="RULGuardrailAgent",

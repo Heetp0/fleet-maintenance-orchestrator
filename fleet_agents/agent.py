@@ -5,7 +5,9 @@ from .rul_agent import rul_agent
 from .guardrail_agent import guardrail_agent
 from .ticketing_agent import ticketing_agent
 
-# Create the SequentialAgent orchestrator
+# NOTE: SequentialAgent shows a deprecation warning in ADK >= 2.x (suggests using
+# 'Workflow' instead), but the replacement class is not yet available as a public
+# import in ADK 2.3.0. SequentialAgent remains fully functional for this version.
 orchestrator = SequentialAgent(
     name="FleetMaintenanceOrchestrator",
     description="Orchestrates RUL prediction, validation, and maintenance ticketing.",
