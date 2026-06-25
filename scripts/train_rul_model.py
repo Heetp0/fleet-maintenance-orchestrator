@@ -31,7 +31,7 @@ import pickle
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 
 # Resolve paths relative to this script's location so the script works
@@ -99,9 +99,11 @@ def train_model():
     # Evaluate
     y_pred = model.predict(X_val)
     rmse = np.sqrt(mean_squared_error(y_val, y_pred))
+    mae = mean_absolute_error(y_val, y_pred)
     r2 = r2_score(y_val, y_pred)
     print(f"\n=== Model Evaluation ===")
     print(f"Validation RMSE : {rmse:.2f} cycles")
+    print(f"Validation MAE  : {mae:.2f} cycles")
     print(f"Validation R²   : {r2:.4f}")
     print("========================\n")
 
